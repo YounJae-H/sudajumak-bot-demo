@@ -89,8 +89,12 @@ button {
     border-color 0.18s ease,
     background 0.18s ease,
     box-shadow 0.18s ease,
-    gap 0.18s ease,
-    padding 0.18s ease;
+    transform 0.22s ease;
+}
+
+.topbar.is-collapsed {
+  pointer-events: none;
+  transform: translateY(calc(-100% - 16px));
 }
 
 .topbar:hover {
@@ -815,34 +819,6 @@ code {
 
   .nav {
     max-height: 180px;
-  }
-
-  .topbar.is-collapsed {
-    gap: 0;
-    padding: 7px 10px;
-    background: rgba(13, 19, 17, 0.92);
-    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.24);
-  }
-
-  .topbar.is-collapsed .brand {
-    min-width: 0;
-  }
-
-  .topbar.is-collapsed .brand-avatar {
-    width: 34px;
-    height: 34px;
-    box-shadow: 0 0 0 3px rgba(43, 181, 150, 0.12);
-  }
-
-  .topbar.is-collapsed .brand small {
-    display: none;
-  }
-
-  .topbar.is-collapsed .nav {
-    max-height: 0;
-    opacity: 0;
-    pointer-events: none;
-    transform: translateY(-8px);
   }
 
   .hero,

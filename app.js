@@ -45,9 +45,13 @@ const navLinks = Array.from(document.querySelectorAll(".nav a"));
 const sections = navLinks
   .map((link) => document.querySelector(link.getAttribute("href")))
   .filter(Boolean);
-const compactTopbarQuery = window.matchMedia("(max-width: 720px)");
+const compactTopbarQuery = window.matchMedia("(max-width: 900px)");
+const TOPBAR_HIDE_AFTER_SCROLL_Y = 96;
+const TOPBAR_TOGGLE_DISTANCE = 72;
 let lastScrollY = Math.max(0, window.scrollY);
+let topbarReferenceScrollY = Math.max(0, window.scrollY);
 let keepTopbarExpandedUntil = 0;
+let topbarScrollTimer = 0;
 
 function escapeHtml(value) {
   return value.replace(/[&<>"']/g, (char) => {
@@ -98,28 +102,49 @@ function updateActiveNav() {
 function expandTopbarTemporarily(duration = 900) {
   if (!topbar) return;
   topbar.classList.remove("is-collapsed");
+  lastScrollY = Math.max(0, window.scrollY);
+  topbarReferenceScrollY = lastScrollY;
   keepTopbarExpandedUntil = Date.now() + duration;
+}
+
+function isCompactTopbarViewport() {
+  return compactTopbarQuery.matches || Boolean(window.Telegram?.WebApp);
+}
+
+function setTopbarCollapsed(collapsed, scrollY) {
+  topbar.classList.toggle("is-collapsed", collapsed);
+  topbarReferenceScrollY = scrollY;
 }
 
 function updateTopbarVisibility() {
   if (!topbar) return;
 
   const currentScrollY = Math.max(0, window.scrollY);
-  if (!compactTopbarQuery.matches || currentScrollY < 24) {
-    topbar.classList.remove("is-collapsed");
+  if (!isCompactTopbarViewport() || currentScrollY < TOPBAR_HIDE_AFTER_SCROLL_Y) {
+    setTopbarCollapsed(false, currentScrollY);
     lastScrollY = currentScrollY;
     return;
   }
 
-  const delta = currentScrollY - lastScrollY;
   if (Date.now() < keepTopbarExpandedUntil) {
     lastScrollY = currentScrollY;
+    topbarReferenceScrollY = currentScrollY;
     return;
   }
-  if (delta > 8) {
-    topbar.classList.add("is-collapsed");
-  } else if (delta < -8) {
-    topbar.classList.remove("is-collapsed");
+
+  const isCollapsed = topbar.classList.contains("is-collapsed");
+  if (currentScrollY > lastScrollY) {
+    if (isCollapsed) {
+      topbarReferenceScrollY = currentScrollY;
+    } else if (currentScrollY - topbarReferenceScrollY >= TOPBAR_TOGGLE_DISTANCE) {
+      setTopbarCollapsed(true, currentScrollY);
+    }
+  } else if (currentScrollY < lastScrollY) {
+    if (!isCollapsed) {
+      topbarReferenceScrollY = currentScrollY;
+    } else if (topbarReferenceScrollY - currentScrollY >= TOPBAR_TOGGLE_DISTANCE) {
+      setTopbarCollapsed(false, currentScrollY);
+    }
   }
   lastScrollY = currentScrollY;
 }
@@ -127,6 +152,8 @@ function updateTopbarVisibility() {
 function handleScroll() {
   updateActiveNav();
   updateTopbarVisibility();
+  window.clearTimeout(topbarScrollTimer);
+  topbarScrollTimer = window.setTimeout(updateTopbarVisibility, 120);
 }
 
 window.addEventListener("scroll", handleScroll, { passive: true });
