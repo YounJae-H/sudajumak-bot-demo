@@ -305,6 +305,51 @@ h2 {
   min-width: 0;
 }
 
+.hero-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.hero-links a {
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+  min-height: 44px;
+  padding: 10px 14px;
+  color: var(--ink);
+  text-decoration: none;
+  background:
+    linear-gradient(135deg, rgba(43, 181, 150, 0.14), rgba(225, 173, 95, 0.08)),
+    rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(229, 242, 233, 0.14);
+  border-radius: 999px;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.18);
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    background 160ms ease;
+}
+
+.hero-links a:hover {
+  background:
+    linear-gradient(135deg, rgba(43, 181, 150, 0.22), rgba(225, 173, 95, 0.12)),
+    rgba(255, 255, 255, 0.055);
+  border-color: rgba(229, 242, 233, 0.26);
+  transform: translateY(-2px);
+}
+
+.hero-links span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.hero-links strong {
+  color: #f6fbf7;
+  font-size: 15px;
+}
+
 .guide-section {
   margin-top: 16px;
   padding: 34px;
