@@ -40,10 +40,14 @@ document.querySelectorAll("ImageSlot").forEach((node) => {
 });
 
 const toast = document.querySelector(".toast");
+const topbar = document.querySelector(".topbar");
 const navLinks = Array.from(document.querySelectorAll(".nav a"));
 const sections = navLinks
   .map((link) => document.querySelector(link.getAttribute("href")))
   .filter(Boolean);
+const compactTopbarQuery = window.matchMedia("(max-width: 720px)");
+let lastScrollY = Math.max(0, window.scrollY);
+let keepTopbarExpandedUntil = 0;
 
 function escapeHtml(value) {
   return value.replace(/[&<>"']/g, (char) => {
@@ -91,8 +95,49 @@ function updateActiveNav() {
   });
 }
 
-window.addEventListener("scroll", updateActiveNav, { passive: true });
+function expandTopbarTemporarily(duration = 900) {
+  if (!topbar) return;
+  topbar.classList.remove("is-collapsed");
+  keepTopbarExpandedUntil = Date.now() + duration;
+}
+
+function updateTopbarVisibility() {
+  if (!topbar) return;
+
+  const currentScrollY = Math.max(0, window.scrollY);
+  if (!compactTopbarQuery.matches || currentScrollY < 24) {
+    topbar.classList.remove("is-collapsed");
+    lastScrollY = currentScrollY;
+    return;
+  }
+
+  const delta = currentScrollY - lastScrollY;
+  if (Date.now() < keepTopbarExpandedUntil) {
+    lastScrollY = currentScrollY;
+    return;
+  }
+  if (delta > 8) {
+    topbar.classList.add("is-collapsed");
+  } else if (delta < -8) {
+    topbar.classList.remove("is-collapsed");
+  }
+  lastScrollY = currentScrollY;
+}
+
+function handleScroll() {
+  updateActiveNav();
+  updateTopbarVisibility();
+}
+
+window.addEventListener("scroll", handleScroll, { passive: true });
+navLinks.forEach((link) => {
+  link.addEventListener("click", () => expandTopbarTemporarily());
+});
+if (typeof compactTopbarQuery.addEventListener === "function") {
+  compactTopbarQuery.addEventListener("change", updateTopbarVisibility);
+}
 updateActiveNav();
+updateTopbarVisibility();
 
 const spotlightTargets = Array.from(document.querySelectorAll(".hero, .guide-section"));
 const finePointerQuery = window.matchMedia("(hover: hover) and (pointer: fine)");

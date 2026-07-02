@@ -84,7 +84,13 @@ button {
   background: rgba(13, 19, 17, 0.78);
   box-shadow: var(--shadow-soft);
   backdrop-filter: blur(18px);
-  transition: border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+  overflow: hidden;
+  transition:
+    border-color 0.18s ease,
+    background 0.18s ease,
+    box-shadow 0.18s ease,
+    gap 0.18s ease,
+    padding 0.18s ease;
 }
 
 .topbar:hover {
@@ -98,6 +104,7 @@ button {
   align-items: center;
   min-width: 178px;
   text-decoration: none;
+  transition: min-width 0.18s ease;
 }
 
 .brand-avatar,
@@ -146,6 +153,10 @@ button {
   flex-wrap: wrap;
   gap: 8px;
   justify-content: flex-end;
+  max-height: 96px;
+  opacity: 1;
+  transform: translateY(0);
+  transition: max-height 0.2s ease, opacity 0.16s ease, transform 0.18s ease;
 }
 
 .nav a {
@@ -795,6 +806,43 @@ code {
   main,
   .footer {
     width: min(100% - 20px, 1180px);
+  }
+
+  .topbar {
+    gap: 10px;
+    max-height: 290px;
+  }
+
+  .nav {
+    max-height: 180px;
+  }
+
+  .topbar.is-collapsed {
+    gap: 0;
+    padding: 7px 10px;
+    background: rgba(13, 19, 17, 0.92);
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.24);
+  }
+
+  .topbar.is-collapsed .brand {
+    min-width: 0;
+  }
+
+  .topbar.is-collapsed .brand-avatar {
+    width: 34px;
+    height: 34px;
+    box-shadow: 0 0 0 3px rgba(43, 181, 150, 0.12);
+  }
+
+  .topbar.is-collapsed .brand small {
+    display: none;
+  }
+
+  .topbar.is-collapsed .nav {
+    max-height: 0;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-8px);
   }
 
   .hero,
